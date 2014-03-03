@@ -70,8 +70,6 @@ func main() {
 		scan := func(path string, info os.FileInfo, err error) error {
 			if path == scanDir {
 				return nil
-			} else if info.IsDir() && !*showDirs {
-				return nil
 			} else if !*showHidden {
 				if filepath.Base(path)[0] == '.' {
 					if info.IsDir() {
@@ -79,6 +77,8 @@ func main() {
 					}
 					return nil
 				}
+			} else if info.IsDir() && !*showDirs {
+				return nil
 			}
 
 			if !*noStripRoot {
@@ -109,8 +109,11 @@ func main() {
 }
 
 func lispOut(fs []string) string {
+	for i, path := range fs {
+		fs[i] = fmt.Sprintf("#P\"%s\"", path)
+	}
 	lst := strings.Join(fs, " ")
-	lst = "'(" + lst + ")"
+	lst = "(" + lst + ")"
 	return lst
 }
 
